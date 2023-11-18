@@ -3,3 +3,4 @@ flake8==6.1.0
 Django==4.2.7
 # sterowniki do postgresa pod django
 psycopg2==2.9.9
+djangorestframework==3.14.0
