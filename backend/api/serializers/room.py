@@ -5,5 +5,11 @@ from ..models import Room
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ('id', 'host', 'guest_can_pause',
+        fields = ('id', 'code', 'host', 'guest_can_pause',
                   'votes_to_skip', 'created_at')
+
+
+class CreateRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ('guest_can_pause', 'votes_to_skip')
