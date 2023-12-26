@@ -1,11 +1,11 @@
-from rest_framework.generics import GenericAPIView
 from ..models import Room
 from ..serializers import RoomSerializer, CreateRoomSerializer
-from rest_framework import mixins, generics
+from rest_framework import mixins, generics, status
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 
 
 class RoomListView(generics.ListAPIView):
-
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
@@ -14,12 +14,10 @@ class RoomListView(generics.ListAPIView):
 
 
 class CreateRoomView(generics.CreateAPIView):
-
     queryset = Room.objects.all()
     serializer_class = CreateRoomSerializer
 
     def perform_create(self, serializer):
-        print(self.create)
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
@@ -31,18 +29,19 @@ class CreateRoomView(generics.CreateAPIView):
 
 
 class RoomDetailView(GenericAPIView,
-                     mixins.UpdateModelMixin,
-                     mixins.RetrieveModelMixin,
-                     mixins.DestroyModelMixin):
-
+                     mixins.RetrieveModelMixin):
     queryset = Room.objects.all()
     serializer_class = CreateRoomSerializer
+    lookup_url_kwarg = 'code'
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+    def get(self, request, format=None):
+        code = request.GET.get(self.lookup_url_kwarg)
+        if code is not None:
+            try:
+                room = Room.objects.get(code=code)
+            except Room.DoesNotExist:
+                return Response({'Room Not Found': 'Invalid Room Code.'}, status=status.HTTP_404_NOT_FOUND)
+            data = RoomSerializer(room).data
+            data['is_host'] = self.request.session.session_key == room.host
+            return Response(data, status=status.HTTP_200_OK)
+        return Response({'Bad Request': 'Code paramater not found in request'}, status=status.HTTP_400_BAD_REQUEST)
