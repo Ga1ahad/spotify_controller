@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormHelperText from '@mui/material/FormHelperText';
-import FormControl  from '@mui/material/FormControl';
+import FormControl from '@mui/material/FormControl';
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -19,24 +19,18 @@ export default function CreateRoom() {
         initialValues: {
             votesToSkip: 1,
             guestCanPause: ''
-
         },
-    onSubmit: async (values) => {
-      try {
-        // Use Axios to make a POST request
-        const response = await axios.post('http://127.0.0.1:8000/api/room/create', values);
-        console.log(response)
-
-        // Handle the response as needed
-        console.log('Server response:', response.data);
-        alert('Room created successfully!');
-      } catch (error) {
-        // Handle errors
-        console.error('Error creating room:', error.message);
-        alert('Error creating room. Please try again.');
-      }
-    },
-  });
+        onSubmit: async (values) => {
+            try {
+                // Use Axios to make a POST request
+                await axios.post('http://127.0.0.1:8000/api/room/create',
+                    values);
+                alert('Room created successfully!');
+            } catch (error) {
+                alert('Error creating room. Please try again.');
+            }
+        },
+    });
 
     return (
         <form onSubmit={formik.handleSubmit}>
@@ -55,7 +49,7 @@ export default function CreateRoom() {
                             <FormControlLabel
                                 name="guestCanPause"
                                 value="true"
-                                control={<Radio type="radio" name="guestCanPause" />}
+                                control={<Radio type="radio" name="guestCanPause"/>}
                                 label="Play/Pause"
                                 labelPlacement="bottom"
                                 onChange={formik.handleChange}
@@ -63,7 +57,7 @@ export default function CreateRoom() {
                             <FormControlLabel
                                 name="guestCanPause"
                                 value="false"
-                                control={<Radio type="radio" name="guestCanPause" />}
+                                control={<Radio type="radio" name="guestCanPause"/>}
                                 label="No control"
                                 labelPlacement="bottom"
                                 onChange={formik.handleChange}
@@ -80,10 +74,8 @@ export default function CreateRoom() {
                             type="number"
                             inputProps={{min: 1}}
                             label="Votes Required To Skip Song"
-                            // value={votesRequired}
                             value={formik.values.votesToSkip}
                             onChange={formik.handleChange}
-                            // onChange={(e) => handleVotesChange(e.target.value)}
                         />
                     </FormControl>
                 </Grid>
@@ -105,7 +97,7 @@ export default function CreateRoom() {
                         Back
                     </Button>
                 </Grid>
-            </Grid >
+            </Grid>
         </form>
     );
 }
