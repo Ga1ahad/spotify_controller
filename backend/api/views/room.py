@@ -1,3 +1,6 @@
+from django.http import JsonResponse
+from rest_framework.views import APIView
+
 from ..models import Room
 from ..serializers import RoomSerializer, CreateRoomSerializer, ViewRoomSerializer, JoinRoomSerializer
 from rest_framework import mixins, generics, status
@@ -65,3 +68,14 @@ class JoinRoomView(GenericAPIView, mixins.RetrieveModelMixin):
 
         return Response({'message': 'Invalid post data, did not find a code key'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserInRoom(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        data = {
+            'code': self.request.session.get('room_code')
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)

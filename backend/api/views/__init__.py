@@ -1,1 +1,1 @@
-from .room import RoomListView, RoomDetailView, CreateRoomView, JoinRoomView
+from .room import RoomListView, RoomDetailView, CreateRoomView, JoinRoomView, UserInRoom
