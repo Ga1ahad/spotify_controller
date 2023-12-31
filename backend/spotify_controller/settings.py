@@ -58,7 +58,12 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 ROOT_URLCONF = 'spotify_controller.urls'
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 365
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_HTTPONLY = False
+CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ALLOW_CREDENTIALS = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

@@ -9,6 +9,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useFormik} from 'formik';
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
 export default function CreateRoom() {
 
