@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import {useState, useEffect} from 'react';
+import {useParams} from 'react-router';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
+import {Grid, Button, Typography} from "@mui/material";
+
 axios.defaults.withCredentials = true;
 
 export default function ViewRoom() {
@@ -8,6 +11,7 @@ export default function ViewRoom() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const params = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,6 +26,15 @@ export default function ViewRoom() {
         };
         fetchData();
     }, [params.roomCode]);
+    const handleLeaveButton = async () => {
+        try {
+            // Use Axios to make a POST request
+            await axios.post('http://127.0.0.1:8000/api/room/leave');
+            navigate('/');
+        } catch (error) {
+            alert('Error leaving room. Please try again.');
+        }
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -31,15 +44,36 @@ export default function ViewRoom() {
         return <div>Error: {error}</div>;
     }
     return (
-        <div>
-            {data && (
-                <>
-                    <h3>{data.code}</h3>
-                    <p>Votes: {data.votes_to_skip}</p>
-                    <p>Guest Can Pause: {data.guest_can_pause ? 'True' : 'False'}</p>
-                    <p>Host: {data.is_host ? 'True' : 'False'}</p>
-                </>
-            )}
-        </div>
-        );
+        <Grid container spacing={1}>
+            <Grid item xs={12} align="center">
+                <Typography variant="h4" component="h4">
+                    Code: {data.code}
+                </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <Typography variant="h6" component="h6">
+                    Votes: {data.votes_to_skip}
+                </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <Typography variant="h6" component="h6">
+                    Guest Can Pause: {data.guest_can_pause ? 'True' : 'False'}
+                </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <Typography variant="h6" component="h6">
+                    Host: {data.is_host ? 'True' : 'False'}
+                </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleLeaveButton}
+                >
+                    Leave Room
+                </Button>
+            </Grid>
+        </Grid>
+    )
 }
