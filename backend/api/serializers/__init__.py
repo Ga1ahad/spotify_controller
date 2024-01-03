@@ -1,1 +1,1 @@
-from .room import RoomSerializer, CreateRoomSerializer, ViewRoomSerializer, JoinRoomSerializer
+from .room import RoomSerializer, CreateRoomSerializer, ViewRoomSerializer, JoinRoomSerializer, UpdateRoomSerializer
