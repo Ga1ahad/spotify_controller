@@ -9,24 +9,36 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useFormik} from 'formik';
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 axios.defaults.withCredentials = true;
 
-export default function CreateRoom() {
-
+export default function CreateRoom(props) {
+    const navigate = useNavigate();
     const handleBack = () => {
-        console.log("Going back...");
+        navigate('/');
     };
     const formik = useFormik({
         initialValues: {
-            votesToSkip: 1,
-            guestCanPause: ''
+            votesToSkip: props.votesToSkip || 1,
+            guestCanPause: props.guestCanPause || false
         },
         onSubmit: async (values) => {
             try {
+                if(props.update){
+                    const roomValues = {
+                        'code': props.roomCode,
+                        'votes_to_skip': values.votesToSkip,
+                        'guest_can_pause': values.guestCanPause,
+                    }
+                    const response = await axios.patch('http://127.0.0.1:8000/api/room/update',
+                        roomValues);
+                } else {
+                    const response = await axios.post('http://127.0.0.1:8000/api/room/create',
+                        values);
+                    navigate('/room/' + response.data.code);
+                }
                 // Use Axios to make a POST request
-                await axios.post('http://127.0.0.1:8000/api/room/create',
-                    values);
-                alert('Room created successfully!');
+
             } catch (error) {
                 alert('Error creating room. Please try again.');
             }
@@ -38,7 +50,7 @@ export default function CreateRoom() {
             <Grid container spacing={1}>
                 <Grid item xs={12} align="center">
                     <Typography component="h4" variant="h4">
-                        Create A Room
+                        {props.update ? 'Update Room' : 'Create Room'}
                     </Typography>
                 </Grid>
                 <Grid item xs={12} align="center">
@@ -46,22 +58,18 @@ export default function CreateRoom() {
                         <FormHelperText>
                             Guest Control of Playback State
                         </FormHelperText>
-                        <RadioGroup row>
+                        <RadioGroup row name="guestCanPause" value={formik.values.guestCanPause}  onChange={formik.handleChange}>
                             <FormControlLabel
-                                name="guestCanPause"
                                 value="true"
                                 control={<Radio type="radio" name="guestCanPause"/>}
                                 label="Play/Pause"
                                 labelPlacement="bottom"
-                                onChange={formik.handleChange}
                             />
                             <FormControlLabel
-                                name="guestCanPause"
                                 value="false"
                                 control={<Radio type="radio" name="guestCanPause"/>}
                                 label="No control"
                                 labelPlacement="bottom"
-                                onChange={formik.handleChange}
                             />
                         </RadioGroup>
                     </FormControl>
@@ -86,17 +94,19 @@ export default function CreateRoom() {
                         variant="contained"
                         type="submit"
                     >
-                        Create A Room
+                        {props.update ? 'Update Room' : 'Create Room'}
                     </Button>
                 </Grid>
                 <Grid item xs={12} align="center">
-                    <Button
-                        color="secondary"
-                        variant="contained"
-                        onClick={handleBack}
-                    >
-                        Back
-                    </Button>
+                    {!props.update && (
+                        <Button
+                            color="secondary"
+                            variant="contained"
+                            onClick={handleBack}
+                        >
+                            Back
+                        </Button>
+                    )}
                 </Grid>
             </Grid>
         </form>

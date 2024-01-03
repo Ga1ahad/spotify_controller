@@ -3,11 +3,14 @@ import {useParams} from 'react-router';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 import {Grid, Button, Typography} from "@mui/material";
+import CreateRoom from './CreateRoom.jsx'
+
 
 axios.defaults.withCredentials = true;
 
 export default function ViewRoom() {
     const [data, setData] = useState(null);
+    const [showSettings, setShowSettings] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const params = useParams();
@@ -43,6 +46,30 @@ export default function ViewRoom() {
     if (error) {
         return <div>Error: {error}</div>;
     }
+
+    if (showSettings) {
+        return (
+            <Grid container spacing={1}>
+                <Grid item xs={12} align="center">
+                    <CreateRoom
+                        update={true}
+                        votesToSkip={data.votes_to_skip}
+                        guestCanPause={data.guest_can_pause}
+                        roomCode={data.code}
+                    />
+                    <Grid item xs={12} align="center">
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                             onClick={() => setShowSettings(false)}
+                        >
+                            Close Settings
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Grid>
+        )
+    }
     return (
         <Grid container spacing={1}>
             <Grid item xs={12} align="center">
@@ -66,6 +93,15 @@ export default function ViewRoom() {
                 </Typography>
             </Grid>
             <Grid item xs={12} align="center">
+                {data.is_host && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                         onClick={() => setShowSettings(true)}
+                    >
+                        Settings
+                    </Button>
+                )}
                 <Button
                     variant="contained"
                     color="secondary"
